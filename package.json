@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node bin/gogreen.js",
     "web": "node bin/gogreen.js web",
-    "test": "node --test tests/**/*.test.js",
+    "test": "node --test",
     "check": "node --check bin/gogreen.js src/index.js src/core/*.js src/cli/*.js src/web/*.js tests/*.js"
   },
   "keywords": [
