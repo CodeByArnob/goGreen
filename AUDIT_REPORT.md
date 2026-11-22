@@ -1,8 +1,8 @@
 # 🌱 goGreen Weekly Contribution & Eligibility Audit Report
 
 **Target GitHub User:** @CodeByArnob  
-**Execution Timestamp:** 2026-11-22T16:37:45.012Z (UTC) | 11/22/2026, 10:37:45 PM (Asia/Dhaka)  
-**Status:** ✅ ELIGIBLE FOR CONTRIBUTIONS  
+**Execution Timestamp:** 2026-11-22T16:39:52.672Z (UTC) | 11/22/2026, 10:39:52 PM (Asia/Dhaka)  
+**Status:** ⚠️ ATTENTION REQUIRED  
 
 > **Safety Notice:** This is an automated read-only audit. No commits or repositories were modified.
 
@@ -12,9 +12,9 @@
 
 | Check | Status | Configured Value | Rule Details |
 | :--- | :---: | :--- | :--- |
-| Commit Author Email | ✅ Pass | `68462590+CodeByArnob@users.noreply.github.com` | GitHub noreply format detected. Commits will be linked to your account while preserving privacy. |
+| Commit Author Email | ❌ Fail | `Not configured` | git config user.email is missing. GitHub will not associate commits with any account. |
 | Target Branch | ✅ Pass | `main` | Default branch confirmed. Commits here count directly toward your contribution graph. |
-| Origin Remote | ✅ Pass | `https://github.com/CodeByArnob/goGreen.git` | Target remote origin is configured. |
+| Origin Remote | ✅ Pass | `https://github.com/CodeByArnob/goGreen` | Target remote origin is configured. |
 
 ### ⚠️ Policy Notices
 - GitHub Contribution Policy Notice: GitHub does not count commits in a fork toward your profile graph by default unless either: (1) You create a PR that is merged into the parent repo, (2) The repository is standalone/detached, or (3) Fork contributions are explicitly tracked. For a guaranteed personal green graph, use a standalone repository under your account.
