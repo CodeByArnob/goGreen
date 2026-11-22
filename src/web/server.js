@@ -11,6 +11,9 @@ import { textToGrid } from "../core/font.js";
 import { generatePatternGrid, PRESET_PATTERNS, listAvailablePatterns } from "../core/patterns.js";
 import { getCalendarStartDate, gridToCommitPlan, summarizePlan, generateEmptyGrid } from "../core/calendar.js";
 import { executeCommitPlan, inspectGitState } from "../core/git-engine.js";
+import { auditContributionEligibility } from "../core/eligibility.js";
+import { detectContributionGaps } from "../core/gap-detector.js";
+import { generatePrePublishReport } from "../core/commit-reviewer.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,6 +82,45 @@ export function createRequestListener() {
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ success: false, error: err.message }));
         }
+        return;
+      }
+
+      // API: GET /api/eligibility
+      if (pathname === "/api/eligibility" && req.method === "GET") {
+        try {
+          const audit = await auditContributionEligibility();
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ success: true, audit }));
+        } catch (err) {
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+        return;
+      }
+
+      // API: POST /api/detect-gaps
+      if (pathname === "/api/detect-gaps" && req.method === "POST") {
+        const body = await parseJsonBody(req);
+        const gapsData = await detectContributionGaps({
+          year: body.year ? parseInt(body.year, 10) : undefined,
+          existingGrid: body.grid
+        });
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ success: true, gaps: gapsData }));
+        return;
+      }
+
+      // API: POST /api/pre-publish-review
+      if (pathname === "/api/pre-publish-review" && req.method === "POST") {
+        const body = await parseJsonBody(req);
+        const grid = body.grid || generateEmptyGrid();
+        const calOpts = body.year ? { year: parseInt(body.year, 10) } : {};
+        const startDate = getCalendarStartDate(calOpts);
+        const plan = gridToCommitPlan(grid, { startDate });
+        const audit = await auditContributionEligibility();
+        const report = generatePrePublishReport(plan, audit);
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ success: true, report }));
         return;
       }
 

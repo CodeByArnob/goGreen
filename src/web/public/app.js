@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initActionButtons();
   initFormListeners();
   checkGitStatus();
+  checkEligibility();
 
   // Load default "GO" text to show off the visual immediately
   applyTextToGrid("GO", 4, true);
@@ -146,6 +147,7 @@ function initTabs() {
     draw: document.getElementById("controlsDraw"),
     text: document.getElementById("controlsText"),
     patterns: document.getElementById("controlsPatterns"),
+    gaps: document.getElementById("controlsGaps"),
     realistic: document.getElementById("controlsRealistic")
   };
 
@@ -247,6 +249,43 @@ function initActionButtons() {
     } catch (err) {
       console.error("Failed to generate realistic activity:", err);
     }
+  });
+
+  // Scan Gaps
+  document.getElementById("btnScanGaps").addEventListener("click", async () => {
+    try {
+      const year = document.getElementById("execYear").value;
+      const res = await fetch("/api/detect-gaps", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          year: year === "rolling" ? undefined : year,
+          grid: state.grid
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.gaps) {
+        document.getElementById("gapsCountBadge").textContent = `${data.gaps.gapDays} blank days`;
+      }
+    } catch (err) {
+      console.error("Failed to scan gaps:", err);
+    }
+  });
+
+  // Fill Missing Days
+  document.getElementById("btnFillGaps").addEventListener("click", () => {
+    const intensity = parseInt(document.getElementById("gapFillIntensity").value, 10);
+    let filled = 0;
+    for (let d = 0; d < GRID_DAYS; d++) {
+      for (let w = 0; w < GRID_WEEKS; w++) {
+        if (state.grid[d][w] === 0) {
+          state.grid[d][w] = intensity;
+          filled++;
+        }
+      }
+    }
+    refreshGridDom();
+    document.getElementById("gapsCountBadge").textContent = `Filled ${filled} days`;
   });
 
   // Copy CLI command
@@ -351,6 +390,27 @@ function initFormListeners() {
 }
 
 /**
+ * Checks GitHub contribution eligibility via backend API
+ */
+async function checkEligibility() {
+  try {
+    const res = await fetch("/api/eligibility");
+    const data = await res.json();
+    const elText = document.getElementById("eligibilityText");
+    const elDot = document.getElementById("eligibilityDot");
+    if (data.success && data.audit) {
+      if (data.audit.isEligible) {
+        elDot.classList.add("active");
+        elText.textContent = `Eligible (${data.audit.summary.currentBranch})`;
+      } else {
+        elDot.classList.remove("active");
+        elText.textContent = `Audit Notice`;
+      }
+    }
+  } catch (_) {}
+}
+
+/**
  * Checks Git status via backend API
  */
 async function checkGitStatus() {
@@ -381,6 +441,32 @@ async function executeCommits() {
   const dryRun = document.getElementById("execDryRun").checked;
   const push = document.getElementById("execPush").checked;
   const branch = document.getElementById("execBranch").value.trim() || undefined;
+
+  // Pre-publish review for live execution
+  if (!dryRun) {
+    try {
+      const revRes = await fetch("/api/pre-publish-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ grid: state.grid, year: year === "rolling" ? undefined : year })
+      });
+      const revData = await revRes.json();
+      if (revData.success && revData.report) {
+        const confirmed = window.confirm(
+          `Review & Confirm Contribution Plan:\n` +
+          `• Planned Commits: ${revData.report.totalCommits}\n` +
+          `• Active Days: ${revData.report.activeDays}\n` +
+          `• Author Email: ${revData.report.eligibilityAudit.summary.gitUserEmail}\n` +
+          `• Target Branch: ${branch || revData.report.eligibilityAudit.summary.currentBranch}\n\n` +
+          `Notice: ${revData.report.disclaimer}\n\n` +
+          `Proceed with committing?`
+        );
+        if (!confirmed) {
+          return;
+        }
+      }
+    } catch (_) {}
+  }
 
   btn.disabled = true;
   btn.innerHTML = `<span class="btn-icon">⏳</span> Processing...`;

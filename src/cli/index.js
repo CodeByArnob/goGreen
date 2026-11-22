@@ -10,17 +10,20 @@ import { generatePatternGrid, listAvailablePatterns } from "../core/patterns.js"
 import { getCalendarStartDate, gridToCommitPlan } from "../core/calendar.js";
 import { renderGrid, printPlanSummary } from "./visualizer.js";
 import { executeCommitPlan } from "../core/git-engine.js";
+import { auditContributionEligibility } from "../core/eligibility.js";
+import { detectContributionGaps, generateGapFillPlan } from "../core/gap-detector.js";
+import { generatePrePublishReport, printTerminalReview } from "../core/commit-reviewer.js";
 import { runInteractiveWizard } from "./prompt.js";
 
 const program = new Command();
 
 program
   .name("gogreen")
-  .description("🌱 Modern, safe tool to draw pixel art, text, and realistic activity on your GitHub contribution graph.")
-  .version("2.0.0");
+  .description("🌱 Modern, safe tool to audit, detect gaps, and design genuine-compliant GitHub contribution graph activity.")
+  .version("2.1.0");
 
 /**
- * Common execution helper for CLI subcommands
+ * Common execution helper for CLI subcommands with pre-publish review
  */
 async function executeCliPlan(grid, opts) {
   const calOpts = opts.year ? { year: parseInt(opts.year, 10) } : {};
@@ -30,6 +33,11 @@ async function executeCliPlan(grid, opts) {
   console.log(chalk.bold("\n📅 GitHub Contribution Graph Preview:\n"));
   console.log(renderGrid(grid, { startDate }));
   printPlanSummary(plan, { dryRun: opts.dryRun });
+
+  // Pre-publish eligibility audit & review
+  const eligibilityAudit = await auditContributionEligibility();
+  const reviewReport = generatePrePublishReport(plan, eligibilityAudit);
+  printTerminalReview(reviewReport);
 
   if (opts.previewOnly) {
     console.log(chalk.cyan("Preview mode only. No changes applied."));
@@ -61,7 +69,69 @@ async function executeCliPlan(grid, opts) {
   }
 }
 
-// 1. Text command
+// 1. Audit / Eligibility Command
+program
+  .command("audit")
+  .alias("check-eligibility")
+  .description("Verify GitHub author email, repository ownership, default branch, and contribution eligibility")
+  .action(async () => {
+    try {
+      console.log(chalk.bold.cyan("\n🔍 Running GitHub Contribution Eligibility Audit...\n"));
+      const audit = await auditContributionEligibility();
+
+      console.log(chalk.bold("Checks:"));
+      audit.checks.forEach(c => {
+        const symbol = c.passed ? chalk.green("✔") : chalk.red("✖");
+        console.log(`  ${symbol} ${chalk.bold(c.name)}: ${c.value}`);
+        console.log(chalk.dim(`    ${c.details}`));
+      });
+
+      if (audit.warnings.length > 0) {
+        console.log(chalk.bold.yellow("\n⚠️  Warnings & Notices:"));
+        audit.warnings.forEach(w => console.log(chalk.yellow(`  • ${w}`)));
+      }
+
+      console.log(chalk.bold(`\nOverall Eligibility: ${audit.isEligible ? chalk.green("ELIGIBLE (Default Branch & Email Configured)") : chalk.red("ATTENTION REQUIRED")}\n`));
+    } catch (err) {
+      console.error(chalk.red(`Audit Error: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+// 2. Gaps Detection Command
+program
+  .command("gaps")
+  .alias("detect-gaps")
+  .description("Scan contribution calendar to identify inactive days (gaps) and optionally generate fill plans")
+  .option("-y, --year <year>", "Specific calendar year to analyze (e.g. 2024)")
+  .option("--fill", "Generate a commit plan to fill identified gap days", false)
+  .option("-i, --intensity <level>", "Green shade level for gap fills (1-4)", "1")
+  .option("-d, --dry-run", "Simulate without committing or altering Git", true)
+  .option("-p, --push", "Automatically push to remote repository", false)
+  .action(async opts => {
+    try {
+      console.log(chalk.bold.cyan("\n📊 Analyzing Contribution Gaps...\n"));
+      const calOpts = opts.year ? { year: parseInt(opts.year, 10) } : {};
+      const gapsData = await detectContributionGaps(calOpts);
+
+      console.log(`  • Analyzed Days: ${chalk.bold(gapsData.totalCalendarDays)}`);
+      console.log(`  • Active Days:   ${chalk.green.bold(gapsData.activeDays)}`);
+      console.log(`  • Gap Days (0):  ${chalk.red.bold(gapsData.gapDays)}`);
+
+      if (opts.fill) {
+        console.log(chalk.bold("\nFilling identified gap days:"));
+        const fillGrid = gapsData.gapGrid.map(row => row.map(cell => (cell > 0 ? parseInt(opts.intensity, 10) : 0)));
+        await executeCliPlan(fillGrid, opts);
+      } else {
+        console.log(chalk.dim("\nTip: Run with `--fill --dry-run` to generate a preview plan to fill these gaps."));
+      }
+    } catch (err) {
+      console.error(chalk.red(`Error: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+// 3. Text command
 program
   .command("text <string>")
   .description("Write custom text or words on your contribution graph")
@@ -90,7 +160,7 @@ program
     }
   });
 
-// 2. Pattern command
+// 4. Pattern command
 program
   .command("pattern [name]")
   .description("Draw preset pixel art patterns (heart, space-invader, pacman, etc.)")
@@ -122,7 +192,7 @@ program
     }
   });
 
-// 3. Realistic / Random activity command
+// 5. Realistic / Random activity command
 program
   .command("realistic")
   .alias("random")
@@ -145,7 +215,7 @@ program
     }
   });
 
-// 4. Web designer command
+// 6. Web designer command
 program
   .command("web")
   .description("Launch the interactive Web UI contribution grid designer in your browser")
@@ -164,7 +234,7 @@ program
     }
   });
 
-// 5. Wizard command
+// 7. Wizard command
 program
   .command("wizard")
   .description("Launch guided interactive terminal wizard")

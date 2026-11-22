@@ -7,6 +7,9 @@ export * from "./core/calendar.js";
 export * from "./core/font.js";
 export * from "./core/patterns.js";
 export * from "./core/git-engine.js";
+export * from "./core/eligibility.js";
+export * from "./core/gap-detector.js";
+export * from "./core/commit-reviewer.js";
 export * from "./cli/visualizer.js";
 export * from "./web/server.js";
 

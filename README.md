@@ -67,6 +67,25 @@ npm run web
 
 ## 💻 CLI Usage & Commands
 
+### 🔍 Contribution Eligibility Audit
+Audit your local Git author email, default branch, repository ownership, and GitHub contribution compatibility:
+```bash
+node bin/gogreen.js audit
+```
+
+### 📊 Missing-Day Gap Detection & Filling
+Scan your calendar window to identify inactive dates (0 commits) and optionally fill them:
+```bash
+# Scan and report blank days for 2024
+node bin/gogreen.js gaps --year 2024
+
+# Preview a plan to fill missing days with subtle activity (Level 1)
+node bin/gogreen.js gaps --year 2024 --fill --intensity 1 --dry-run
+
+# Execute gap fill commits locally
+node bin/gogreen.js gaps --year 2024 --fill --intensity 1 --dry-run=false
+```
+
 ### 🔤 Text Art (Spell Words on Your Graph)
 Write custom text centered horizontally on your calendar:
 ```bash

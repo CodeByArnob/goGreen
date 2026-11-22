@@ -1,7 +1,7 @@
 {
   "name": "gogreen",
-  "version": "2.0.0",
-  "description": "Modern, safe CLI and web tool to design pixel art, text, and realistic activity on your GitHub contribution graph.",
+  "version": "2.1.0",
+  "description": "Modern, safe CLI and web tool to audit, detect gaps, and design genuine-compliant GitHub contribution graph activity.",
   "main": "src/index.js",
   "type": "module",
   "bin": {

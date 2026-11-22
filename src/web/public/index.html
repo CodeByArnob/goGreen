@@ -22,6 +22,10 @@
         <span class="status-dot"></span>
         <span id="gitBranchText">Checking git...</span>
       </div>
+      <div id="eligibilityStatus" class="git-status-badge" title="GitHub Contribution Rules Eligibility">
+        <span id="eligibilityDot" class="status-dot"></span>
+        <span id="eligibilityText">Auditing Eligibility...</span>
+      </div>
       <a href="https://github.com/CodeByArnob/goGreen" target="_blank" class="github-link" title="View on GitHub">
         <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor">
           <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
@@ -37,6 +41,7 @@
       <button class="tab-btn active" data-mode="draw">✏️ Pixel Paint</button>
       <button class="tab-btn" data-mode="text">🔤 Text Art</button>
       <button class="tab-btn" data-mode="patterns">🎨 Preset Patterns</button>
+      <button class="tab-btn" data-mode="gaps">🔍 Gap Detection & Fill</button>
       <button class="tab-btn" data-mode="realistic">📈 Natural Activity</button>
     </section>
 
@@ -111,7 +116,26 @@
         <button id="btnApplyPattern" class="btn btn-primary">Load Pattern</button>
       </div>
 
-      <!-- 4. Realistic mode controls -->
+      <!-- 4. Gaps mode controls -->
+      <div id="controlsGaps" class="mode-controls">
+        <div class="control-group">
+          <label class="control-label">Detected Gaps:</label>
+          <span id="gapsCountBadge" class="badge">Scan required</span>
+        </div>
+        <div class="control-group">
+          <label for="gapFillIntensity" class="control-label">Fill Intensity:</label>
+          <select id="gapFillIntensity" class="select-input">
+            <option value="1" selected>Level 1 (1 commit per gap)</option>
+            <option value="2">Level 2 (4 commits per gap)</option>
+            <option value="3">Level 3 (7 commits per gap)</option>
+            <option value="4">Level 4 (10 commits per gap)</option>
+          </select>
+        </div>
+        <button id="btnScanGaps" class="btn btn-secondary">🔍 Scan Blank Days</button>
+        <button id="btnFillGaps" class="btn btn-primary">⚡ Fill Missing Days</button>
+      </div>
+
+      <!-- 5. Realistic mode controls -->
       <div id="controlsRealistic" class="mode-controls">
         <div class="control-group flex-grow">
           <label for="activeDaysSlider" class="control-label">Target Active Days: <span id="daysValue" class="highlight">160</span></label>
