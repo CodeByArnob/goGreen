@@ -25,10 +25,12 @@ Sat ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ 
 
 ## ✨ Features
 
+- 🌟 **Signature Developer Identity Typography**: Prominently displays `@CodeByArnob` in the Web Studio using dynamically rendered green-dot pixel-art typography with GitHub heatmap shades (`#0e4429`, `#006d32`, `#26a641`, `#39d353`) and subtle ambient depth glow.
 - 🔍 **Live GitHub Contribution Audit**: Audit your author email, default branch, and repository fork status against GitHub's official contribution eligibility rules (`gogreen audit`).
 - 📊 **Missing-Day Gap Detection**: Connect to GitHub's GraphQL API or local Git history to detect days with zero activity across 2023, 2024, 2025, and 2026 (`gogreen gaps --all-years`).
 - 🛡️ **Pre-Publish Commit Review**: Inspect every commit date, author email, and compliance checklist with built-in future-date protection before committing or pushing.
-- ⏰ **Cloud-Based Automated Weekly Audit**: GitHub Actions cron scheduler audits your contribution gaps every Monday at 9:00 AM Bangladesh time (`Asia/Dhaka`), generating a rich summary report without modifying repositories without approval.
+- ⏰ **Cloud-Based Automated Weekly Audit**: GitHub Actions cron scheduler audits your contribution gaps every Monday at 9:00 AM Bangladesh time (`Asia/Dhaka`), generating a rich summary report and preserving history in `audits/` without unauthorized commits.
+- 📜 **Historical Audit Ledger**: Automatically archives every audit run to `audits/audit-YYYY-MM-DD.md` and maintains a running history index in `audits/HISTORY.md`.
 - 🌐 **Interactive Web Visual Studio**: Zero-dependency browser designer (`gogreen web`). Click and drag to paint green shades freely on a live 53×7 calendar grid!
 - 🔤 **Custom Typography & Words**: Type any word or phrase (e.g. `HI`, `CODE`, `GO`) and render it automatically centered on your contribution graph with our 5×7 bitmap font engine.
 - 🎨 **Preset 8-bit Pixel Art**: Instant presets including **Heart**, **Space Invader**, **Pac-Man & Ghost**, **Smiley Face**, **Sine Wave**, **Checkerboard**, and **Stripes**.

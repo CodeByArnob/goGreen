@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initFormListeners();
   checkGitStatus();
   checkEligibility();
+  renderSignatureUsername("CodeByArnob");
 
   // Load default "GO" text to show off the visual immediately
   applyTextToGrid("GO", 4, true);
@@ -408,6 +409,36 @@ async function checkEligibility() {
       }
     }
   } catch (_) {}
+}
+
+/**
+ * Renders the Signature Developer Identity dot-matrix artwork for @CodeByArnob
+ */
+async function renderSignatureUsername(username = "CodeByArnob") {
+  const container = document.getElementById("usernameDotMatrix");
+  if (!container) return;
+
+  try {
+    const res = await fetch(`/api/render-signature?text=${encodeURIComponent(username)}`);
+    const data = await res.json();
+    if (data.success && data.matrix) {
+      container.innerHTML = "";
+      container.style.gridTemplateColumns = `repeat(${data.cols}, 12px)`;
+
+      for (let r = 0; r < data.rows; r++) {
+        for (let c = 0; c < data.cols; c++) {
+          const shade = data.matrix[r][c];
+          const dot = document.createElement("div");
+          dot.className = "u-dot";
+          dot.dataset.shade = shade;
+          dot.title = `Dot (${c + 1}, ${r + 1}) - GitHub Heatmap Shade ${shade}`;
+          container.appendChild(dot);
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Failed to render signature username:", err);
+  }
 }
 
 /**

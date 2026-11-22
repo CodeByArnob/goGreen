@@ -416,21 +416,307 @@ export const FONT_5X7 = {
     " 111 ",
     "  1  ",
     "     "
+  ],
+  "a": [
+    "     ",
+    "     ",
+    " 111 ",
+    "    1",
+    " 1111",
+    "1   1",
+    " 1111"
+  ],
+  "b": [
+    "1    ",
+    "1    ",
+    "1111 ",
+    "1   1",
+    "1   1",
+    "1   1",
+    "1111 "
+  ],
+  "c": [
+    "     ",
+    "     ",
+    " 111 ",
+    "1   1",
+    "1    ",
+    "1   1",
+    " 111 "
+  ],
+  "d": [
+    "    1",
+    "    1",
+    " 1111",
+    "1   1",
+    "1   1",
+    "1   1",
+    " 1111"
+  ],
+  "e": [
+    "     ",
+    "     ",
+    " 111 ",
+    "11111",
+    "1    ",
+    "1    ",
+    " 111 "
+  ],
+  "f": [
+    "  11 ",
+    " 1  1",
+    " 1   ",
+    "1111 ",
+    " 1   ",
+    " 1   ",
+    " 1   "
+  ],
+  "g": [
+    "     ",
+    "     ",
+    " 1111",
+    "1   1",
+    " 1111",
+    "    1",
+    " 111 "
+  ],
+  "h": [
+    "1    ",
+    "1    ",
+    "1111 ",
+    "1   1",
+    "1   1",
+    "1   1",
+    "1   1"
+  ],
+  "i": [
+    " 1 ",
+    "   ",
+    "11 ",
+    " 1 ",
+    " 1 ",
+    " 1 ",
+    "111"
+  ],
+  "j": [
+    "   1",
+    "    ",
+    "  11",
+    "   1",
+    "   1",
+    "1  1",
+    " 11 "
+  ],
+  "k": [
+    "1    ",
+    "1    ",
+    "1  1 ",
+    "1 1  ",
+    "11   ",
+    "1 1  ",
+    "1  1 "
+  ],
+  "l": [
+    "11 ",
+    " 1 ",
+    " 1 ",
+    " 1 ",
+    " 1 ",
+    " 1 ",
+    " 11"
+  ],
+  "m": [
+    "       ",
+    "       ",
+    "11 111 ",
+    "1 1 1 1",
+    "1 1 1 1",
+    "1 1 1 1",
+    "1   1 1"
+  ],
+  "n": [
+    "     ",
+    "     ",
+    "1111 ",
+    "1   1",
+    "1   1",
+    "1   1",
+    "1   1"
+  ],
+  "o": [
+    "     ",
+    "     ",
+    " 111 ",
+    "1   1",
+    "1   1",
+    "1   1",
+    " 111 "
+  ],
+  "p": [
+    "     ",
+    "     ",
+    "1111 ",
+    "1   1",
+    "1111 ",
+    "1    ",
+    "1    "
+  ],
+  "q": [
+    "     ",
+    "     ",
+    " 1111",
+    "1   1",
+    " 1111",
+    "    1",
+    "    1"
+  ],
+  "r": [
+    "     ",
+    "     ",
+    "1 11 ",
+    "11  1",
+    "1    ",
+    "1    ",
+    "1    "
+  ],
+  "s": [
+    "     ",
+    "     ",
+    " 1111",
+    "1    ",
+    " 111 ",
+    "    1",
+    "1111 "
+  ],
+  "t": [
+    " 1  ",
+    " 1  ",
+    "1111",
+    " 1  ",
+    " 1  ",
+    " 1 1",
+    "  11"
+  ],
+  "u": [
+    "     ",
+    "     ",
+    "1   1",
+    "1   1",
+    "1   1",
+    "1   1",
+    " 1111"
+  ],
+  "v": [
+    "     ",
+    "     ",
+    "1   1",
+    "1   1",
+    " 1 1 ",
+    " 1 1 ",
+    "  1  "
+  ],
+  "w": [
+    "       ",
+    "       ",
+    "1  1  1",
+    "1  1  1",
+    "1  1  1",
+    "11 1 11",
+    " 1 1 1 "
+  ],
+  "x": [
+    "     ",
+    "     ",
+    "1   1",
+    " 1 1 ",
+    "  1  ",
+    " 1 1 ",
+    "1   1"
+  ],
+  "y": [
+    "     ",
+    "     ",
+    "1   1",
+    "1   1",
+    " 1111",
+    "    1",
+    " 111 "
+  ],
+  "z": [
+    "     ",
+    "     ",
+    "11111",
+    "   1 ",
+    "  1  ",
+    " 1   ",
+    "11111"
   ]
 };
 
 /**
- * Gets glyph representation for a character
+ * Gets glyph representation for a character (supports case preservation with fallback)
  * @param {string} char
  * @returns {string[]}
  */
 export function getGlyph(char) {
+  if (FONT_5X7[char]) {
+    return FONT_5X7[char];
+  }
   const upper = char.toUpperCase();
   if (FONT_5X7[upper]) {
     return FONT_5X7[upper];
   }
-  // Fallback to space for unsupported chars
   return FONT_5X7[" "];
+}
+
+/**
+ * Renders text into a multi-shaded 2D dot matrix with depth (levels 1-4).
+ * Perfect for signature pixel typography banners.
+ *
+ * @param {string} text
+ * @param {Object} [options]
+ * @param {number} [options.spacing=1]
+ * @param {boolean} [options.depthGradient=true]
+ * @returns {{ rows: number, cols: number, matrix: number[][] }}
+ */
+export function renderTextToShadedMatrix(text, options = {}) {
+  const spacing = options.spacing ?? 1;
+  const depthGradient = options.depthGradient !== false;
+  const totalWidth = measureTextWidth(text, spacing);
+  const matrix = Array.from({ length: GRID_DAYS }, () => Array(totalWidth).fill(0));
+
+  let currentCol = 0;
+
+  for (let i = 0; i < text.length; i++) {
+    const glyph = getGlyph(text[i]);
+    const charWidth = glyph[0].length;
+
+    for (let r = 0; r < GRID_DAYS; r++) {
+      for (let c = 0; c < charWidth; c++) {
+        if (glyph[r] && glyph[r][c] === "1") {
+          let shade = 4;
+          if (depthGradient) {
+            // Add subtle multi-shade variation: top highlights (level 4), center body (level 3/4), bottom/edge shading (level 2/3)
+            if (r === 0 || r === 2) shade = 4;
+            else if (r === 1 || r === 3) shade = 3;
+            else if (r === 4 || r === 5) shade = 4;
+            else shade = 3;
+            // Alternating subtle column texture
+            if ((c + currentCol) % 3 === 0 && shade > 2) shade = 2;
+          }
+          matrix[r][currentCol + c] = shade;
+        }
+      }
+    }
+
+    currentCol += charWidth + spacing;
+  }
+
+  return {
+    rows: GRID_DAYS,
+    cols: totalWidth,
+    matrix
+  };
 }
 
 /**

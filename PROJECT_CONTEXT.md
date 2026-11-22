@@ -66,13 +66,17 @@
    - 11 built-in presets: `heart`, `space-invader`, `pacman`, `ghost`, `smiley`, `hearts`, `sine-wave`, `checkerboard`, `stripes`, `full-green`, `random-realistic`.
    - CLI command: `gogreen pattern <name>`.
 7. **Visual Studio Web UI (`src/web/`)**:
+   - Signature Developer Identity: dynamically rendered green-dot pixel-art typography of `@CodeByArnob` with GitHub heatmap depth shades.
    - Interactive 53×7 clickable/draggable grid canvas.
    - Real-time gap scanning and fill button.
    - Live eligibility status badge.
    - Pre-publish confirmation modal before commit execution.
-8. **Automated Test Suite (`tests/`)**:
-   - 25 unit and integration tests passing with 100% success rate.
-   - GitHub Actions CI workflow configured and green.
+8. **Historical Audit Ledger (`audits/`)**:
+   - Archives every run to `audits/audit-YYYY-MM-DD.md`.
+   - Running ledger index maintained in `audits/HISTORY.md`.
+9. **Automated Test Suite (`tests/`)**:
+   - 26 unit and integration tests passing with 100% success rate.
+   - GitHub Actions CI matrix and Scheduled Audit workflows configured and green.
 
 ---
 

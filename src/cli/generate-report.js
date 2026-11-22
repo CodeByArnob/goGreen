@@ -95,7 +95,34 @@ export async function runReportCli() {
   // Write to AUDIT_REPORT.md in repo root
   const reportPath = path.resolve(process.cwd(), "AUDIT_REPORT.md");
   await fs.writeFile(reportPath, mdReport, "utf8");
-  console.log(chalk.green(`✔ Saved latest audit report to: ${reportPath}\n`));
+  console.log(chalk.green(`✔ Saved latest audit report to: ${reportPath}`));
+
+  // Preserve historical audit result in audits/ directory
+  try {
+    const auditsDir = path.resolve(process.cwd(), "audits");
+    await fs.mkdir(auditsDir, { recursive: true });
+
+    const dateStr = new Date().toISOString().split("T")[0];
+    const historicalPath = path.join(auditsDir, `audit-${dateStr}.md`);
+    await fs.writeFile(historicalPath, mdReport, "utf8");
+
+    // Update historical index log in audits/HISTORY.md
+    const historyLogPath = path.join(auditsDir, "HISTORY.md");
+    const logLine = `- **${dateStr}** — [Audit Report](audit-${dateStr}.md) (Generated at ${new Date().toISOString()})\n`;
+    let existingHistory = "# 📜 Historical Contribution Audit Log\n\n";
+    try {
+      existingHistory = await fs.readFile(historyLogPath, "utf8");
+      if (!existingHistory.includes(`audit-${dateStr}.md`)) {
+        existingHistory += logLine;
+      }
+    } catch (_) {
+      existingHistory += logLine;
+    }
+    await fs.writeFile(historyLogPath, existingHistory, "utf8");
+    console.log(chalk.green(`✔ Preserved historical audit archive in: ${historicalPath}\n`));
+  } catch (err) {
+    console.warn("Could not save historical audit archive:", err.message);
+  }
 }
 
 if (process.argv[1] && process.argv[1].endsWith("generate-report.js")) {

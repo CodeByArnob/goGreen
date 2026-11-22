@@ -7,7 +7,7 @@ import http from "node:http";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { textToGrid } from "../core/font.js";
+import { textToGrid, renderTextToShadedMatrix } from "../core/font.js";
 import { generatePatternGrid, PRESET_PATTERNS, listAvailablePatterns } from "../core/patterns.js";
 import { getCalendarStartDate, gridToCommitPlan, summarizePlan, generateEmptyGrid } from "../core/calendar.js";
 import { executeCommitPlan, inspectGitState } from "../core/git-engine.js";
@@ -72,6 +72,15 @@ export function createRequestListener() {
     const pathname = url.pathname;
 
     try {
+      // API: GET /api/render-signature
+      if (pathname === "/api/render-signature" && req.method === "GET") {
+        const text = url.searchParams.get("text") || "CodeByArnob";
+        const result = renderTextToShadedMatrix(text, { depthGradient: true, spacing: 1 });
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ success: true, text, ...result }));
+        return;
+      }
+
       // API: GET /api/status
       if (pathname === "/api/status" && req.method === "GET") {
         try {

@@ -51,6 +51,14 @@ test("web-server: serves index.html and static assets", async () => {
     assert.equal(gapsRes.status, 200);
     assert.equal(gapsData.success, true);
     assert.ok(gapsData.gaps.totalCalendarDays > 0);
+    // 7. GET /api/render-signature
+    const sigRes = await fetch(`${baseUrl}/api/render-signature?text=CodeByArnob`);
+    const sigData = await sigRes.json();
+    assert.equal(sigRes.status, 200);
+    assert.equal(sigData.success, true);
+    assert.equal(sigData.text, "CodeByArnob");
+    assert.equal(sigData.rows, 7);
+    assert.ok(sigData.cols > 40);
   } finally {
     await stopTestServer(server);
   }
@@ -114,6 +122,14 @@ test("web-server: API endpoints respond with correct schemas", async () => {
     assert.equal(gapsRes.status, 200);
     assert.equal(gapsData.success, true);
     assert.ok(gapsData.gaps.totalCalendarDays > 0);
+    // 7. GET /api/render-signature
+    const sigRes = await fetch(`${baseUrl}/api/render-signature?text=CodeByArnob`);
+    const sigData = await sigRes.json();
+    assert.equal(sigRes.status, 200);
+    assert.equal(sigData.success, true);
+    assert.equal(sigData.text, "CodeByArnob");
+    assert.equal(sigData.rows, 7);
+    assert.ok(sigData.cols > 40);
   } finally {
     await stopTestServer(server);
   }
