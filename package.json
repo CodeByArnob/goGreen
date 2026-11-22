@@ -1,19 +1,45 @@
 {
-  "name": "thomyorke",
-  "version": "1.0.0",
-  "description": "nice dream",
-  "main": "index.js",
+  "name": "gogreen",
+  "version": "2.0.0",
+  "description": "Modern, safe CLI and web tool to design pixel art, text, and realistic activity on your GitHub contribution graph.",
+  "main": "src/index.js",
   "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "bin": {
+    "gogreen": "./bin/gogreen.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "start": "node bin/gogreen.js",
+    "web": "node bin/gogreen.js web",
+    "test": "node --test tests/**/*.test.js",
+    "check": "node --check bin/gogreen.js src/index.js src/core/*.js src/cli/*.js src/web/*.js tests/*.js"
+  },
+  "keywords": [
+    "github",
+    "contribution-graph",
+    "activity",
+    "pixel-art",
+    "automation",
+    "git-history",
+    "developer-tools"
+  ],
+  "author": "CodeByArnob (https://github.com/CodeByArnob)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeByArnob/goGreen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CodeByArnob/goGreen/issues"
+  },
+  "homepage": "https://github.com/CodeByArnob/goGreen#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
-    "jsonfile": "^6.1.0",
-    "moment": "^2.30.1",
-    "random": "^4.1.0",
-    "simple-git": "^3.25.0"
+    "chalk": "^6.0.1",
+    "commander": "^15.1.0",
+    "dayjs": "^1.11.23",
+    "inquirer": "^14.3.1",
+    "simple-git": "^4.1.0"
   }
 }

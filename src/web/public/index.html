@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>goGreen Studio - Visual Contribution Designer</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
+</head>
+<body class="dark-theme">
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo">
+        <span class="logo-icon">🌱</span>
+        <span class="logo-title">goGreen Studio</span>
+        <span class="badge">v2.0</span>
+      </div>
+      <p class="tagline">Interactive GitHub Contribution Graph Designer & Automation Engine</p>
+    </div>
+    <div class="header-right">
+      <div id="gitStatus" class="git-status-badge">
+        <span class="status-dot"></span>
+        <span id="gitBranchText">Checking git...</span>
+      </div>
+      <a href="https://github.com/CodeByArnob/goGreen" target="_blank" class="github-link" title="View on GitHub">
+        <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+        </svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- Mode Selector Tabs -->
+    <section class="mode-tabs">
+      <button class="tab-btn active" data-mode="draw">✏️ Pixel Paint</button>
+      <button class="tab-btn" data-mode="text">🔤 Text Art</button>
+      <button class="tab-btn" data-mode="patterns">🎨 Preset Patterns</button>
+      <button class="tab-btn" data-mode="realistic">📈 Natural Activity</button>
+    </section>
+
+    <!-- Sub-Toolbars depending on mode -->
+    <section class="toolbar-card">
+      <!-- 1. Paint mode controls -->
+      <div id="controlsDraw" class="mode-controls active">
+        <div class="control-group">
+          <label class="control-label">Brush Intensity:</label>
+          <div class="palette-selector">
+            <button class="color-btn" data-level="0" title="Erase / Level 0 (0 commits)"><span class="swatch level-0"></span> None</button>
+            <button class="color-btn" data-level="1" title="Level 1 (1-2 commits)"><span class="swatch level-1"></span> Low</button>
+            <button class="color-btn" data-level="2" title="Level 2 (3-5 commits)"><span class="swatch level-2"></span> Med</button>
+            <button class="color-btn" data-level="3" title="Level 3 (6-8 commits)"><span class="swatch level-3"></span> High</button>
+            <button class="color-btn active" data-level="4" title="Level 4 (9-12 commits)"><span class="swatch level-4"></span> Max</button>
+          </div>
+        </div>
+        <div class="control-group actions-group">
+          <button id="btnClear" class="btn btn-secondary" title="Clear the entire grid">🧹 Clear</button>
+          <button id="btnInvert" class="btn btn-secondary" title="Invert drawn cells">🔄 Invert</button>
+          <button id="btnFillAll" class="btn btn-secondary" title="Fill entire grid with current brush">🟩 Fill All</button>
+        </div>
+      </div>
+
+      <!-- 2. Text mode controls -->
+      <div id="controlsText" class="mode-controls">
+        <div class="control-group flex-grow">
+          <label for="textInput" class="control-label">Text to Render:</label>
+          <input type="text" id="textInput" class="input-text" placeholder="e.g. HELLO, GO, ARNOB" maxlength="12" value="GO">
+        </div>
+        <div class="control-group">
+          <label for="textIntensity" class="control-label">Intensity:</label>
+          <select id="textIntensity" class="select-input">
+            <option value="4" selected>Level 4 (Brightest)</option>
+            <option value="3">Level 3 (High)</option>
+            <option value="2">Level 2 (Medium)</option>
+            <option value="1">Level 1 (Subtle)</option>
+          </select>
+        </div>
+        <div class="control-group checkbox-group">
+          <label><input type="checkbox" id="textAutoCenter" checked> Auto-Center</label>
+        </div>
+        <button id="btnApplyText" class="btn btn-primary">Apply Text</button>
+      </div>
+
+      <!-- 3. Pattern mode controls -->
+      <div id="controlsPatterns" class="mode-controls">
+        <div class="control-group flex-grow">
+          <label for="patternSelect" class="control-label">Choose Pattern:</label>
+          <select id="patternSelect" class="select-input">
+            <option value="heart">Pixel Heart</option>
+            <option value="space-invader">Space Invader</option>
+            <option value="pacman">Pacman & Ghost</option>
+            <option value="ghost">Arcade Ghost</option>
+            <option value="smiley">Smiley Face</option>
+            <option value="hearts">Row of Hearts</option>
+            <option value="sine-wave">Sine Wave Gradient</option>
+            <option value="checkerboard">Checkerboard</option>
+            <option value="stripes">Vertical Stripes</option>
+            <option value="full-green">Full Green</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="patternIntensity" class="control-label">Intensity:</label>
+          <select id="patternIntensity" class="select-input">
+            <option value="4" selected>Level 4</option>
+            <option value="3">Level 3</option>
+            <option value="2">Level 2</option>
+            <option value="1">Level 1</option>
+          </select>
+        </div>
+        <button id="btnApplyPattern" class="btn btn-primary">Load Pattern</button>
+      </div>
+
+      <!-- 4. Realistic mode controls -->
+      <div id="controlsRealistic" class="mode-controls">
+        <div class="control-group flex-grow">
+          <label for="activeDaysSlider" class="control-label">Target Active Days: <span id="daysValue" class="highlight">160</span></label>
+          <input type="range" id="activeDaysSlider" class="range-slider" min="30" max="320" value="160">
+        </div>
+        <button id="btnGenerateRealistic" class="btn btn-primary">Generate Realistic Schedule</button>
+      </div>
+    </section>
+
+    <!-- Contribution Grid Workspace -->
+    <section class="canvas-card">
+      <div class="calendar-wrapper">
+        <div class="month-header" id="monthHeader"></div>
+        <div class="calendar-body">
+          <div class="day-labels">
+            <span>Sun</span>
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+          </div>
+          <div class="grid-container" id="gridContainer"></div>
+        </div>
+      </div>
+      <div class="legend-bar">
+        <span class="legend-text">Less</span>
+        <span class="swatch level-0"></span>
+        <span class="swatch level-1"></span>
+        <span class="swatch level-2"></span>
+        <span class="swatch level-3"></span>
+        <span class="swatch level-4"></span>
+        <span class="legend-text">More</span>
+        <span class="hint-text">💡 Tip: Click and drag on cells to paint freely!</span>
+      </div>
+    </section>
+
+    <!-- Stats & Configuration Section -->
+    <div class="bottom-layout">
+      <!-- Live Stats Card -->
+      <section class="card stats-card">
+        <h3 class="card-title">📊 Plan Metrics</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number" id="statCommits">0</div>
+            <div class="stat-label">Total Commits</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="statDays">0</div>
+            <div class="stat-label">Active Days (out of 371)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="statCoverage">0%</div>
+            <div class="stat-label">Year Coverage</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="statSpan">—</div>
+            <div class="stat-label">Date Window</div>
+          </div>
+        </div>
+
+        <div class="cli-command-preview">
+          <div class="cli-header">
+            <span>Equivalent CLI Command</span>
+            <button id="btnCopyCli" class="btn-sm btn-secondary">📋 Copy</button>
+          </div>
+          <code id="cliSnippet">gogreen --dry-run</code>
+        </div>
+      </section>
+
+      <!-- Execution Panel Card -->
+      <section class="card execution-card">
+        <h3 class="card-title">🚀 Execution & Safety Controls</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="execYear" class="form-label">Calendar Year Anchor:</label>
+            <select id="execYear" class="select-input">
+              <option value="rolling">Past 52 Weeks (Rolling)</option>
+              <option value="2024">Calendar 2024</option>
+              <option value="2023">Calendar 2023</option>
+              <option value="2022">Calendar 2022</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="execBranch" class="form-label">Target Git Branch:</label>
+            <input type="text" id="execBranch" class="input-text" placeholder="Current branch (or new branch)">
+          </div>
+        </div>
+
+        <div class="toggles-group">
+          <label class="toggle-control">
+            <input type="checkbox" id="execDryRun" checked>
+            <span class="toggle-slider"></span>
+            <span class="toggle-label"><strong>Dry-Run Mode</strong> (Recommended: test without altering Git history)</span>
+          </label>
+          <label class="toggle-control">
+            <input type="checkbox" id="execPush">
+            <span class="toggle-slider"></span>
+            <span class="toggle-label"><strong>Push to GitHub</strong> (Sync commits to remote origin)</span>
+          </label>
+        </div>
+
+        <div class="execution-actions">
+          <button id="btnExecute" class="btn btn-success btn-large">
+            <span class="btn-icon">⚡</span> Run Commits
+          </button>
+        </div>
+
+        <div id="execStatusBox" class="status-box hidden">
+          <div id="execStatusMessage" class="status-msg"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <p>🌱 <strong>goGreen</strong> • Engineered for developers • Safe, atomic, and customizable.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
