@@ -34,6 +34,23 @@ test("web-server: serves index.html and static assets", async () => {
     const jsRes = await fetch(`${baseUrl}/app.js`);
     assert.equal(jsRes.status, 200);
     assert.equal(jsRes.headers.get("content-type"), "application/javascript; charset=utf-8");
+    // 5. GET /api/eligibility
+    const elRes = await fetch(`${baseUrl}/api/eligibility`);
+    const elData = await elRes.json();
+    assert.equal(elRes.status, 200);
+    assert.equal(elData.success, true);
+    assert.ok(Array.isArray(elData.audit.checks));
+
+    // 6. POST /api/detect-gaps
+    const gapsRes = await fetch(`${baseUrl}/api/detect-gaps`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ year: 2024 })
+    });
+    const gapsData = await gapsRes.json();
+    assert.equal(gapsRes.status, 200);
+    assert.equal(gapsData.success, true);
+    assert.ok(gapsData.gaps.totalCalendarDays > 0);
   } finally {
     await stopTestServer(server);
   }
@@ -80,6 +97,23 @@ test("web-server: API endpoints respond with correct schemas", async () => {
     assert.equal(execData.success, true);
     assert.equal(execData.result.dryRun, true);
     assert.ok(execData.result.totalCommits > 0);
+    // 5. GET /api/eligibility
+    const elRes = await fetch(`${baseUrl}/api/eligibility`);
+    const elData = await elRes.json();
+    assert.equal(elRes.status, 200);
+    assert.equal(elData.success, true);
+    assert.ok(Array.isArray(elData.audit.checks));
+
+    // 6. POST /api/detect-gaps
+    const gapsRes = await fetch(`${baseUrl}/api/detect-gaps`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ year: 2024 })
+    });
+    const gapsData = await gapsRes.json();
+    assert.equal(gapsRes.status, 200);
+    assert.equal(gapsData.success, true);
+    assert.ok(gapsData.gaps.totalCalendarDays > 0);
   } finally {
     await stopTestServer(server);
   }

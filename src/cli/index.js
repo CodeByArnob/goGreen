@@ -11,7 +11,7 @@ import { getCalendarStartDate, gridToCommitPlan } from "../core/calendar.js";
 import { renderGrid, printPlanSummary } from "./visualizer.js";
 import { executeCommitPlan } from "../core/git-engine.js";
 import { auditContributionEligibility } from "../core/eligibility.js";
-import { detectContributionGaps, generateGapFillPlan } from "../core/gap-detector.js";
+import { detectContributionGaps, generateGapFillPlan, scanHistoricalYears } from "../core/gap-detector.js";
 import { generatePrePublishReport, printTerminalReview } from "../core/commit-reviewer.js";
 import { runInteractiveWizard } from "./prompt.js";
 
@@ -104,19 +104,51 @@ program
   .alias("detect-gaps")
   .description("Scan contribution calendar to identify inactive days (gaps) and optionally generate fill plans")
   .option("-y, --year <year>", "Specific calendar year to analyze (e.g. 2024)")
+  .option("-u, --user <username>", "Target GitHub username", "CodeByArnob")
+  .option("--all-years", "Scan all historical years (2023, 2024, 2025, 2026)", false)
+  .option("--local", "Force scan local repository Git history only instead of live GitHub", false)
   .option("--fill", "Generate a commit plan to fill identified gap days", false)
   .option("-i, --intensity <level>", "Green shade level for gap fills (1-4)", "1")
   .option("-d, --dry-run", "Simulate without committing or altering Git", true)
   .option("-p, --push", "Automatically push to remote repository", false)
   .action(async opts => {
     try {
+      if (opts.allYears) {
+        console.log(chalk.bold.cyan(`\n📊 Scanning All Historical Years for @${opts.user}...\n`));
+        const allReports = await scanHistoricalYears(opts.user, [2023, 2024, 2025, 2026]);
+
+        console.log(chalk.bold("┌──────┬──────────────┬──────────────┬──────────────┬──────────────┬────────────┐"));
+        console.log(chalk.bold("│ Year │ Total Contrib│ Active Days  │ Gap Days (0) │ Active %     │ Data Source│"));
+        console.log(chalk.bold("├──────┼──────────────┼──────────────┼──────────────┼──────────────┼────────────┤"));
+
+        allReports.forEach(r => {
+          const yearStr = String(r.year).padEnd(4);
+          const totalStr = String(r.totalContributions).padStart(12);
+          const activeStr = String(r.activeDays).padStart(12);
+          const gapStr = String(r.gapDays).padStart(12);
+          const pctStr = `${r.percentActive}%`.padStart(10);
+          const srcStr = r.dataSource === "github-live-graphql" ? chalk.green("Live GraphQL") : chalk.yellow("Local Git");
+          console.log(`│ ${yearStr} │ ${totalStr} │ ${chalk.green(activeStr)} │ ${chalk.red(gapStr)} │ ${pctStr}   │ ${srcStr.padEnd(10)} │`);
+        });
+        console.log(chalk.bold("└──────┴──────────────┴──────────────┴──────────────┴──────────────┴────────────┘\n"));
+        return;
+      }
+
       console.log(chalk.bold.cyan("\n📊 Analyzing Contribution Gaps...\n"));
-      const calOpts = opts.year ? { year: parseInt(opts.year, 10) } : {};
+      const calOpts = {
+        year: opts.year ? parseInt(opts.year, 10) : undefined,
+        username: opts.user,
+        preferLive: !opts.local
+      };
       const gapsData = await detectContributionGaps(calOpts);
 
-      console.log(`  • Analyzed Days: ${chalk.bold(gapsData.totalCalendarDays)}`);
-      console.log(`  • Active Days:   ${chalk.green.bold(gapsData.activeDays)}`);
-      console.log(`  • Gap Days (0):  ${chalk.red.bold(gapsData.gapDays)}`);
+      console.log(`  • Target User:    ${chalk.bold.cyan(`@${opts.user}`)}`);
+      console.log(`  • Year / Scope:   ${chalk.bold(gapsData.year)}`);
+      console.log(`  • Data Source:    ${gapsData.dataSource === "github-live-graphql" ? chalk.green.bold("Live GitHub GraphQL API") : chalk.yellow.bold("Local Git History")}`);
+      console.log(`  • Total Contrib:  ${chalk.bold.green(gapsData.totalContributions)}`);
+      console.log(`  • Analyzed Days:  ${chalk.bold(gapsData.totalCalendarDays)}`);
+      console.log(`  • Active Days:    ${chalk.green.bold(gapsData.activeDays)} (${gapsData.percentActive}%)`);
+      console.log(`  • Gap Days (0):   ${chalk.red.bold(gapsData.gapDays)}`);
 
       if (opts.fill) {
         console.log(chalk.bold("\nFilling identified gap days:"));

@@ -47,24 +47,30 @@
    - `validateCommitDates()`: Blocks/warns against future-dated commits.
    - CLI command: `gogreen audit` / `gogreen check-eligibility`.
 2. **Missing-Day Gap Detector (`src/core/gap-detector.js`)**:
-   - `detectContributionGaps()`: Scans 371-day window and flags days with 0 commits.
+   - `fetchLiveGitHubContributions()`: Live query to GitHub GraphQL API for exact historical contribution days and levels.
+   - `detectContributionGaps()`: Scans 371-day window and flags days with 0 commits across any historical year.
+   - `scanHistoricalYears()`: Multi-year audit across 2023, 2024, 2025, and 2026.
    - `generateGapFillPlan()`: Generates commit schedules targeting solely the inactive days.
-   - CLI command: `gogreen gaps --year 2024 [--fill] [--intensity 1-4] [--dry-run]`.
-3. **Pre-Publish Review & Disclaimer Engine (`src/core/commit-reviewer.js`)**:
+   - CLI command: `gogreen gaps --year 2024` and `gogreen gaps --all-years`.
+3. **Automated Cloud Scheduled Audit Workflow (`.github/workflows/audit-schedule.yml`)**:
+   - Runs in GitHub Actions every Monday at 09:00 AM Bangladesh time (`Asia/Dhaka`, UTC+6 = 03:00 UTC).
+   - Audits contribution eligibility, checks all historical years, and publishes report to `$GITHUB_STEP_SUMMARY` and artifact without unauthorized repo modifications.
+   - Script: `src/cli/generate-report.js`.
+4. **Pre-Publish Review & Disclaimer Engine (`src/core/commit-reviewer.js`)**:
    - `generatePrePublishReport()`: Formats pre-publish report table.
    - `printTerminalReview()`: Renders review table with safety checks and transparency notices.
-4. **5×7 Bitmap Typography Engine (`src/core/font.js`)**:
+5. **5×7 Bitmap Typography Engine (`src/core/font.js`)**:
    - Glyph dictionary (A–Z, 0–9, symbols) with horizontal auto-centering.
    - CLI command: `gogreen text "<string>"`.
-5. **Preset Pixel Art Engine (`src/core/patterns.js`)**:
+6. **Preset Pixel Art Engine (`src/core/patterns.js`)**:
    - 11 built-in presets: `heart`, `space-invader`, `pacman`, `ghost`, `smiley`, `hearts`, `sine-wave`, `checkerboard`, `stripes`, `full-green`, `random-realistic`.
    - CLI command: `gogreen pattern <name>`.
-6. **Visual Studio Web UI (`src/web/`)**:
+7. **Visual Studio Web UI (`src/web/`)**:
    - Interactive 53×7 clickable/draggable grid canvas.
    - Real-time gap scanning and fill button.
    - Live eligibility status badge.
    - Pre-publish confirmation modal before commit execution.
-7. **Automated Test Suite (`tests/`)**:
+8. **Automated Test Suite (`tests/`)**:
    - 25 unit and integration tests passing with 100% success rate.
    - GitHub Actions CI workflow configured and green.
 

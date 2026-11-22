@@ -1,12 +1,13 @@
 # 🌱 goGreen
 
 [![CI](https://github.com/CodeByArnob/goGreen/actions/workflows/ci.yml/badge.svg)](https://github.com/CodeByArnob/goGreen/actions/workflows/ci.yml)
+[![Weekly Audit](https://github.com/CodeByArnob/goGreen/actions/workflows/audit-schedule.yml/badge.svg)](https://github.com/CodeByArnob/goGreen/actions/workflows/audit-schedule.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
 [![Vulnerabilities](https://img.shields.io/badge/vulnerabilities-0-brightgreen)](https://github.com/CodeByArnob/goGreen)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/CodeByArnob/goGreen/pulls)
 
-> **Modern, safe, and interactive studio to draw pixel art, render custom typography, and simulate realistic developer activity on your GitHub contribution graph.**
+> **Modern, safe, and transparent tool to audit, detect gaps, and design genuine-compliant GitHub contribution graph activity.**
 
 ```
     NovDec    Jan    Feb    Mar      Apr    May      Jun    Jul    Aug      Sep    Oct    Nov    
@@ -24,28 +25,26 @@ Sat ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ 
 
 ## ✨ Features
 
-- 🌐 **Interactive Web Visual Studio**: Built-in, zero-dependency browser designer (`gogreen web`). Click and drag to paint green shades freely on a live 53×7 calendar grid!
+- 🔍 **Live GitHub Contribution Audit**: Audit your author email, default branch, and repository fork status against GitHub's official contribution eligibility rules (`gogreen audit`).
+- 📊 **Missing-Day Gap Detection**: Connect to GitHub's GraphQL API or local Git history to detect days with zero activity across 2023, 2024, 2025, and 2026 (`gogreen gaps --all-years`).
+- 🛡️ **Pre-Publish Commit Review**: Inspect every commit date, author email, and compliance checklist with built-in future-date protection before committing or pushing.
+- ⏰ **Cloud-Based Automated Weekly Audit**: GitHub Actions cron scheduler audits your contribution gaps every Monday at 9:00 AM Bangladesh time (`Asia/Dhaka`), generating a rich summary report without modifying repositories without approval.
+- 🌐 **Interactive Web Visual Studio**: Zero-dependency browser designer (`gogreen web`). Click and drag to paint green shades freely on a live 53×7 calendar grid!
 - 🔤 **Custom Typography & Words**: Type any word or phrase (e.g. `HI`, `CODE`, `GO`) and render it automatically centered on your contribution graph with our 5×7 bitmap font engine.
 - 🎨 **Preset 8-bit Pixel Art**: Instant presets including **Heart**, **Space Invader**, **Pac-Man & Ghost**, **Smiley Face**, **Sine Wave**, **Checkerboard**, and **Stripes**.
-- 📈 **Natural Activity Simulation**: Generate organic developer commit histories with realistic Monday–Friday work patterns, lower weekend activity, and natural vacation gaps.
-- 🛡️ **Safety-First Git Engine**:
-  - **Dry-Run mode by default**: Preview every commit, active day, and date range before making changes.
-  - **Safe push guards**: Accidental pushes to the original author's repository are strictly blocked. Remote pushing requires explicit confirmation (`--push`).
-  - **Accurate timestamps**: Sets both `GIT_AUTHOR_DATE` and `GIT_COMMITTER_DATE` simultaneously for 100% calendar placement accuracy.
-- 🔒 **Zero Vulnerabilities**: Completely eliminated all legacy CVEs present in earlier versions (`simple-git` upgraded to secure `^4.1.0`, deprecated `moment` replaced with lightweight `dayjs`).
-- ⚡ **Automated Testing Suite**: 100% passing tests using Node.js native test runner and GitHub Actions CI.
+- 📈 **Natural Activity Simulation**: Generate organic developer commit histories with realistic Monday–Friday work patterns and lower weekend volume.
+- 🔒 **Zero Vulnerabilities**: All legacy CVEs eliminated (`simple-git ^4.1.0`, `dayjs ^1.11.23`).
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. Run Directly with npx (No Installation Needed)
+### 1. Run Guided Wizard (No Installation Needed)
 ```bash
 npx gogreen
 ```
-*Launches the guided interactive terminal wizard.*
 
-### 2. Or Clone and Run Locally
+### 2. Clone and Run Locally
 ```bash
 git clone https://github.com/CodeByArnob/goGreen.git
 cd goGreen
@@ -73,17 +72,20 @@ Audit your local Git author email, default branch, repository ownership, and Git
 node bin/gogreen.js audit
 ```
 
-### 📊 Missing-Day Gap Detection & Filling
-Scan your calendar window to identify inactive dates (0 commits) and optionally fill them:
+### 📊 Missing-Day Gap Detection
+Scan your contribution calendar using live GitHub GraphQL API data to identify inactive dates (0 commits):
 ```bash
 # Scan and report blank days for 2024
 node bin/gogreen.js gaps --year 2024
 
+# Scan all historical years (2023, 2024, 2025, 2026)
+node bin/gogreen.js gaps --all-years
+
+# Force local repository Git history scan only (offline mode)
+node bin/gogreen.js gaps --year 2024 --local
+
 # Preview a plan to fill missing days with subtle activity (Level 1)
 node bin/gogreen.js gaps --year 2024 --fill --intensity 1 --dry-run
-
-# Execute gap fill commits locally
-node bin/gogreen.js gaps --year 2024 --fill --intensity 1 --dry-run=false
 ```
 
 ### 🔤 Text Art (Spell Words on Your Graph)
@@ -94,9 +96,6 @@ node bin/gogreen.js text "HI" --dry-run
 
 # Custom green intensity level (1 to 4)
 node bin/gogreen.js text "CODE" --intensity 4 --dry-run
-
-# Commit locally without pushing
-node bin/gogreen.js text "GO" --dry-run=false
 
 # Target a specific calendar year
 node bin/gogreen.js text "2024" --year 2024 --dry-run
@@ -136,48 +135,54 @@ Simulate human developer activity across a whole year:
 ```bash
 # Simulate ~160 active contribution days
 node bin/gogreen.js realistic --days 160 --dry-run
-
-# Apply to a dedicated branch
-node bin/gogreen.js realistic --days 180 --branch activity-history --dry-run=false
 ```
 
 ### 🌐 Web Studio UI
 ```bash
 node bin/gogreen.js web --port 3300
 ```
-Key features in Web Studio:
-1. **Interactive Canvas**: Click or drag across the 53×7 grid to paint shades of green.
-2. **Preset Art Switcher**: Load any preset pattern with 1 click.
-3. **Live Typography Preview**: Type text and see it immediately reflected on the calendar.
-4. **Real-Time Plan Metrics**: Displays total commit count, active days count, and year coverage percentage.
-5. **Instant CLI Command Generator**: Generates the exact reproducible CLI command for your current design.
 
 ---
 
-## 🛠️ Programmatic Node.js API
+## ⏰ Cloud-Based Automated Audit (GitHub Actions)
 
-You can also use `goGreen` as a JavaScript library in your own Node.js projects:
+`goGreen` includes an always-on cloud audit workflow ([`.github/workflows/audit-schedule.yml`](.github/workflows/audit-schedule.yml)) running on GitHub's infrastructure:
 
-```javascript
-import {
-  textToGrid,
-  generatePatternGrid,
-  gridToCommitPlan,
-  executeCommitPlan,
-  getCalendarStartDate
-} from "gogreen";
+- **Cadence**: Every Monday at **9:00 AM Bangladesh Time (`Asia/Dhaka`, UTC+6)** (Cron: `0 3 * * 1` in UTC).
+- **Execution**: Runs in GitHub Actions cloud runners independent of whether your personal PC is awake or connected.
+- **Reporting**: Audits contribution eligibility, scans historical gap days, and publishes the report to:
+  1. The GitHub Actions Step Summary tab for immediate web viewing.
+  2. A downloadable run artifact (`AUDIT_REPORT.md`).
+- **Read-Only Safety Guarantee**: The cloud scheduler **never commits, pushes, or alters your repositories without explicit approval**.
 
-// 1. Generate a 53x7 grid with text
-const grid = textToGrid("DEV", { intensity: 4, autoCenter: true });
+---
 
-// 2. Map coordinates to calendar dates
-const startDate = getCalendarStartDate({ year: 2024 });
-const plan = gridToCommitPlan(grid, { startDate });
+## 🛡️ Official GitHub Contribution Rules & Troubleshooting
 
-// 3. Execute dry-run simulation
-const result = await executeCommitPlan(plan, { dryRun: true });
-console.log(`Planned ${result.totalCommits} commits across ${result.activeDays} days.`);
-```
+If your commits are not displaying on your GitHub profile, verify the following official GitHub contribution criteria:
+
+### 1. Author Email Association
+- **Rule**: The email address used to author commits MUST be attached to your GitHub account under **Settings → Emails**.
+- **Privacy Recommended**: You can use GitHub's official noreply email: `<id>+<username>@users.noreply.github.com`.
+- **How to fix**:
+  ```bash
+  git config user.name "CodeByArnob"
+  git config user.email "68462590+CodeByArnob@users.noreply.github.com"
+  ```
+
+### 2. Default Branch Requirement
+- **Rule**: GitHub's contribution graph *only counts commits made to the default branch* (typically `main`) or `gh-pages`.
+- **Note**: Commits made to feature branches will NOT count until merged into the default branch.
+
+### 3. Repository Fork Policy
+- **Rule**: GitHub does not display commits made in a repository fork on profile contribution graphs by default.
+- **Solutions**:
+  1. Enable **"Include private contributions and contributions to forks"** in your GitHub profile settings.
+  2. Or maintain activity in a standalone (non-fork) repository under your account.
+  3. Or merge changes via pull request into the parent repository.
+
+### 4. Timestamp Validity
+- **Rule**: Commits with future timestamps will not count toward your contribution calendar until that date actually occurs.
 
 ---
 
@@ -186,18 +191,25 @@ console.log(`Planned ${result.totalCommits} commits across ${result.activeDays} 
 ```
 goGreen/
 ├── .github/workflows/
-│   └── ci.yml                 # Automated CI workflow (Node 18, 20, 22)
+│   ├── ci.yml                 # Automated CI workflow (Node 18, 20, 22)
+│   └── audit-schedule.yml     # Weekly Monday 9:00 AM BST cloud audit
 ├── bin/
 │   └── gogreen.js             # CLI binary entrypoint (npx gogreen)
+├── docs/
+│   └── ARCHITECTURE.md        # Technical architectural specification
 ├── src/
 │   ├── index.js               # Programmatic API export
 │   ├── core/
 │   │   ├── calendar.js        # GitHub 53x7 grid-to-date coordinate mapper
+│   │   ├── commit-reviewer.js # Pre-publish audit & review engine
 │   │   ├── config.js          # Constants, thresholds, and color palettes
+│   │   ├── eligibility.js     # GitHub contribution eligibility checker
 │   │   ├── font.js            # 5x7 ASCII pixel font matrix dictionary
+│   │   ├── gap-detector.js    # Live GraphQL and local gap detection
 │   │   ├── git-engine.js      # Safe Git execution engine & push guards
 │   │   └── patterns.js        # Built-in pixel art sprite generators
 │   ├── cli/
+│   │   ├── generate-report.js # Markdown report generator
 │   │   ├── index.js           # Commander CLI routing & option parsers
 │   │   ├── prompt.js          # Interactive terminal wizard
 │   │   └── visualizer.js      # Terminal ANSI contribution grid renderer
@@ -209,12 +221,15 @@ goGreen/
 │           └── app.js         # Interactive canvas and paint controls
 ├── tests/
 │   ├── calendar.test.js       # Grid coordinate calculation tests
+│   ├── commit-reviewer.test.js# Pre-publish review tests
+│   ├── eligibility.test.js    # Eligibility audit tests
 │   ├── font.test.js           # Font glyph & text matrix tests
+│   ├── gap-detector.test.js   # Gap detector & fill plan tests
 │   ├── git-engine.test.js     # Git safeguards and dry-run tests
 │   ├── patterns.test.js       # Pattern generator bounds tests
 │   └── web-server.test.js     # Web API & asset serving tests
-├── docs/
-│   └── ARCHITECTURE.md        # Technical architectural specification
+├── AUDIT_REPORT.md            # Generated weekly audit report
+├── PROJECT_CONTEXT.md         # Persistent project memory
 ├── package.json
 └── README.md
 ```
@@ -223,7 +238,7 @@ goGreen/
 
 ## 🧪 Testing
 
-Run the automated test suite:
+Run the automated test suite (25 tests):
 ```bash
 npm test
 ```
@@ -240,19 +255,9 @@ npm audit
 
 ---
 
-## 🛡️ Safety & Best Practices
-
-1. **Always use `--dry-run` first**: Check the terminal grid preview and commit counts before executing live commits.
-2. **Use dedicated branches**: Instead of committing directly to your default branch (`main`), consider creating a dedicated activity branch (e.g. `--branch activity-history`).
-3. **Never push credentials or personal secrets**: goGreen only modifies an innocuous `data.json` timestamp file.
-4. **Safe Remotes**: goGreen includes built-in guards ensuring commits can never be pushed to upstream repositories.
-
----
-
 ## 📜 License & Credits
 
 Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
 
-- Original concept and proof of concept by [fenrir2608](https://github.com/fenrir2608/goGreen).
-- Inspired by the educational tutorial by [Akshay Saini](https://github.com/akshaymarch7).
-- Architecture, visual designer, 5×7 pixel font engine, CLI suite, and test infrastructure engineered by [CodeByArnob](https://github.com/CodeByArnob).
+- Original concept by [fenrir2608](https://github.com/fenrir2608/goGreen).
+- Architecture, live GraphQL gap detector, visual studio, 5×7 pixel font engine, CLI suite, and test infrastructure engineered by [CodeByArnob](https://github.com/CodeByArnob).
